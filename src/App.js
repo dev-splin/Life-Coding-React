@@ -9,7 +9,8 @@ class App extends Component {
         super(props);
 
         this.state = {
-            mode: 'welcome',
+            mode: 'read',
+            selectedContentId: 1,
             welcome: {
                 title: 'Welcome',
                 desc: 'Hello, React!!',
@@ -33,15 +34,36 @@ class App extends Component {
             desc = this.state.welcome.desc;
             break;
         case 'read':
-            title = this.state.contents[0].title;
-            desc = this.state.contents[0].desc;
+            for (const content of this.state.contents) {
+                if (content.id !== this.state.selectedContentId) {
+                    continue;
+                }
+
+                title = content.title;
+                desc = content.desc;
+                break;
+            }
             break;
     }
 
     return (
         <div className="App">
-            <Subject title={this.state.subject.title} subject={this.state.subject.subject}></Subject>
-            <TOC contents={this.state.contents}></TOC>
+            <Subject
+                title={this.state.subject.title}
+                subject={this.state.subject.subject}
+                onChangePage={function () {
+                    this.setState({ mode: 'welcome' });
+                }.bind(this)}
+            ></Subject>
+            <TOC
+                contents={this.state.contents}
+                onChangePage={function (id) {
+                    this.setState({
+                        mode: 'read',
+                        selectedContentId: id,
+                    });
+                }.bind(this)}
+            ></TOC>
             <Content title={title} desc={desc}></Content>
         </div>
     );
