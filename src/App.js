@@ -2,14 +2,16 @@ import './App.css';
 import {Component} from "react";
 import Subject from "./components/Subject";
 import TOC from "./components/TOC";
-import Content from "./components/Content";
+import ReadContent from "./components/ReadContent";
+import CreateContent from "./components/CreateContent";
+import Control from "./components/Control";
 
 class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            mode: 'read',
+            mode: 'create',
             selectedContentId: 1,
             welcome: {
                 title: 'Welcome',
@@ -27,11 +29,12 @@ class App extends Component {
         }
     }
   render() {
-    let title, desc;
+    let title, desc, Content;
     switch (this.state.mode) {
         case 'welcome':
             title = this.state.welcome.title;
             desc = this.state.welcome.desc;
+            Content = <ReadContent title={title} desc={desc}></ReadContent>;
             break;
         case 'read':
             for (const content of this.state.contents) {
@@ -43,6 +46,15 @@ class App extends Component {
                 desc = content.desc;
                 break;
             }
+
+            Content = <ReadContent title={title} desc={desc}></ReadContent>;
+            break;
+        case 'create':
+            Content= <CreateContent></CreateContent>
+            break;
+        case 'update':
+            break;
+        case 'delete':
             break;
     }
 
@@ -64,7 +76,12 @@ class App extends Component {
                     });
                 }.bind(this)}
             ></TOC>
-            <Content title={title} desc={desc}></Content>
+            <Control
+                onChangeMode={function (mode) {
+                    this.setState({mode});
+                }.bind(this)}
+            ></Control>
+            {Content}
         </div>
     );
   }
