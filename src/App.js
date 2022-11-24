@@ -4,6 +4,7 @@ import Subject from "./components/Subject";
 import TOC from "./components/TOC";
 import ReadContent from "./components/ReadContent";
 import CreateContent from "./components/CreateContent";
+import UpdateContent from "./components/UpdateContent"
 import Control from "./components/Control";
 
 class App extends Component {
@@ -29,75 +30,91 @@ class App extends Component {
             ],
         }
     }
-  render() {
-    let title, desc, Content;
-    switch (this.state.mode) {
-        case 'welcome':
-            title = this.state.welcome.title;
-            desc = this.state.welcome.desc;
-            Content = <ReadContent title={title} desc={desc}></ReadContent>;
-            break;
-        case 'read':
-            for (const content of this.state.contents) {
-                if (content.id !== this.state.selectedContentId) {
-                    continue;
-                }
 
-                title = content.title;
-                desc = content.desc;
+    getContent() {
+        let title, desc, contentData, Content;
+
+        switch (this.state.mode) {
+            case 'welcome':
+                title = this.state.welcome.title;
+                desc = this.state.welcome.desc;
+                Content = <ReadContent title={title} desc={desc}></ReadContent>;
                 break;
-            }
+            case 'read':
+                contentData = this.getContentData();
 
-            Content = <ReadContent title={title} desc={desc}></ReadContent>;
-            break;
-        case 'create':
-            ++this.max_content_id;
+                Content = <ReadContent title={contentData.title} desc={contentData.desc}></ReadContent>;
+                break;
+            case 'create':
+                ++this.max_content_id;
 
-            Content= <CreateContent
-                onSubmit={function (title, desc) {
-                    const contents = this.state.contents.concat({
-                        id: this.max_content_id,
-                        title,
-                        desc
-                    });
+                Content = <CreateContent
+                    onSubmit={function (title, desc) {
+                        const contents = this.state.contents.concat({
+                            id: this.max_content_id,
+                            title,
+                            desc
+                        });
 
-                    this.setState({ contents });
+                        this.setState({ contents });
                     }.bind(this)}
-            ></CreateContent>
-            break;
-        case 'update':
-            break;
-        case 'delete':
-            break;
+                ></CreateContent>
+                break;
+            case 'update':
+                contentData = this.getContentData();
+
+                Content = <UpdateContent
+                    title={contentData.title}
+                    desc={contentData.desc}
+                ></UpdateContent>
+                break;
+            case 'delete':
+                break;
+        }
+
+        return Content;
     }
 
-    return (
-        <div className="App">
-            <Subject
-                title={this.state.subject.title}
-                subject={this.state.subject.subject}
-                onChangePage={function () {
-                    this.setState({ mode: 'welcome' });
-                }.bind(this)}
-            ></Subject>
-            <TOC
-                contents={this.state.contents}
-                onChangePage={function (id) {
-                    this.setState({
-                        mode: 'read',
-                        selectedContentId: id,
-                    });
-                }.bind(this)}
-            ></TOC>
-            <Control
-                onChangeMode={function (mode) {
-                    this.setState({mode});
-                }.bind(this)}
-            ></Control>
-            {Content}
-        </div>
-    );
-  }
+    getContentData() {
+        for (const content of this.state.contents) {
+            if (content.id !== this.state.selectedContentId) {
+                continue;
+            }
+
+            return content;
+        }
+
+        return [];
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <Subject
+                    title={this.state.subject.title}
+                    subject={this.state.subject.subject}
+                    onChangePage={function () {
+                        this.setState({ mode: 'welcome' });
+                    }.bind(this)}
+                ></Subject>
+                <TOC
+                    contents={this.state.contents}
+                    onChangePage={function (id) {
+                        this.setState({
+                            mode: 'read',
+                            selectedContentId: id,
+                        });
+                    }.bind(this)}
+                ></TOC>
+                <Control
+                    onChangeMode={function (mode) {
+                        this.setState({mode});
+                    }.bind(this)}
+                ></Control>
+                {this.getContent()}
+            </div>
+        );
+    }
 }
 
 export default App;
