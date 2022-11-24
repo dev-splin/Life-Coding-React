@@ -9,6 +9,7 @@ import Control from "./components/Control";
 class App extends Component {
     constructor(props) {
         super(props);
+        this.max_content_id = 3;
 
         this.state = {
             mode: 'create',
@@ -50,7 +51,19 @@ class App extends Component {
             Content = <ReadContent title={title} desc={desc}></ReadContent>;
             break;
         case 'create':
-            Content= <CreateContent></CreateContent>
+            ++this.max_content_id;
+
+            Content= <CreateContent
+                onSubmit={function (title, desc) {
+                    const contents = this.state.contents.concat({
+                        id: this.max_content_id,
+                        title,
+                        desc
+                    });
+
+                    this.setState({ contents });
+                    }.bind(this)}
+            ></CreateContent>
             break;
         case 'update':
             break;

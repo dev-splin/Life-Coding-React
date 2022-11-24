@@ -1,7 +1,13 @@
 import {Component} from "react";
 
 class TOC extends Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        console.log('shouldComponentUpdate');
+        return !(nextProps.contents === this.props.contents);
+    }
+
     render() {
+        console.log('TOC render');
         const list = [];
         const contents = this.props.contents;
         for (const content of contents) {
