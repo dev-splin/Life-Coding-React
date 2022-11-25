@@ -41,7 +41,7 @@ class App extends Component {
                 Content = <ReadContent title={title} desc={desc}></ReadContent>;
                 break;
             case 'read':
-                contentData = this.getContentData();
+                contentData = this.getContentData(this.state.selectedContentId);
 
                 Content = <ReadContent title={contentData.title} desc={contentData.desc}></ReadContent>;
                 break;
@@ -61,11 +61,24 @@ class App extends Component {
                 ></CreateContent>
                 break;
             case 'update':
-                contentData = this.getContentData();
+                contentData = this.getContentData(this.state.selectedContentId);
 
                 Content = <UpdateContent
+                    id={contentData.id}
                     title={contentData.title}
                     desc={contentData.desc}
+                    onSubmit={function (id, title, desc) {
+                        const contents = Array.from(this.state.contents);
+                        for (let i = 0; i < contents.length; i++) {
+                            if(contents[i].id !== id) {
+                                continue;
+                            }
+
+                            contents[i] = { id, title, desc };
+                        }
+
+                        this.setState({ contents, mode: 'read' });
+                    }.bind(this)}
                 ></UpdateContent>
                 break;
             case 'delete':
@@ -75,9 +88,9 @@ class App extends Component {
         return Content;
     }
 
-    getContentData() {
+    getContentData(findId) {
         for (const content of this.state.contents) {
-            if (content.id !== this.state.selectedContentId) {
+            if (content.id !== findId) {
                 continue;
             }
 
