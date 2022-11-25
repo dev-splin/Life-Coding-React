@@ -32,6 +32,7 @@ class App extends Component {
     }
 
     getContent() {
+        console.log('getContent');
         let title, desc, contentData, Content;
 
         switch (this.state.mode) {
@@ -75,13 +76,12 @@ class App extends Component {
                             }
 
                             contents[i] = { id, title, desc };
+                            break;
                         }
 
                         this.setState({ contents, mode: 'read' });
                     }.bind(this)}
                 ></UpdateContent>
-                break;
-            case 'delete':
                 break;
         }
 
@@ -121,7 +121,25 @@ class App extends Component {
                 ></TOC>
                 <Control
                     onChangeMode={function (mode) {
-                        this.setState({mode});
+                        if (mode === 'delete') {
+                            if (!window.confirm('정말 삭제하시겠습니까?')) {
+                                return;
+                            }
+
+                            const contents = Array.from(this.state.contents);
+                            for (let i = 0; i < contents.length; i++) {
+                                if (contents[i].id !== this.state.selectedContentId) {
+                                    continue;
+                                }
+
+                                contents.splice(i, 1);
+                                break;
+                            }
+                            console.log(contents);
+                            this.setState({contents, mode: 'welcome'});
+                        } else {
+                            this.setState({mode});
+                        }
                     }.bind(this)}
                 ></Control>
                 {this.getContent()}
